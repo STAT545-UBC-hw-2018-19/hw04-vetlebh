@@ -1,0 +1,32 @@
+---
+title: "Hw04"
+author: "Vetle Birkeland Huglen"
+date: "4 10 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(gapminder)
+library(tidyverse)
+```
+
+```{r}
+compareLifeExp <- gapminder %>% 
+  select(year, country, lifeExp) %>%
+  filter(country == 'Norway' | country == 'Canada' | country == 'Sudan') %>%
+  group_by(year) %>%
+  spread(key = country, value=lifeExp)
+knitr::kable(compareLifeExp)
+
+compareLifeExp %>%
+  ggplot() +
+  geom_point(aes(year, Norway), colour = 'Orange') +
+  geom_point(aes(year, Canada), colour = 'Green') +
+  geom_point(aes(year, Sudan), colour = 'Turquoise') +
+  labs(y = "Life Expectancy")
+```
+
