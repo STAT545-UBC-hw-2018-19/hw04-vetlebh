@@ -14,6 +14,10 @@ library(gapminder)
 library(tidyverse)
 ```
 
+##TASK 1 - TIDY DATA
+
+Here follows a table and a graph visualising life expectancy by year in Norway, Canada and Sudan.
+
 ```{r}
 compareLifeExp <- gapminder %>% 
   select(year, country, lifeExp) %>%
@@ -30,3 +34,46 @@ compareLifeExp %>%
   labs(y = "Life Expectancy")
 ```
 
+Now lets look at the smallest life expectancy in each continent by year. 
+
+```{r}
+minLifeExp <- gapminder %>%
+  group_by(year, continent) %>%
+  summarise(min_lifeExp = min(lifeExp)) %>%
+  spread(key = continent, value = min_lifeExp)
+knitr::kable(minLifeExp)
+```
+
+Like in the plot in the first task, this form makes it easy to make plots that compare the different continents, since we have already divided them into seperate features. Lets make a line plot to get some variety:
+
+```{r}
+minLifeExp %>% 
+  ggplot() +
+  geom_line(aes(year, Africa), colour = 'red') +
+  geom_line(aes(year, Asia), colour = 'green') +
+  geom_line(aes(year, Europe), colour = 'purple') +
+  geom_line(aes(year, Americas), colour = 'light blue') +
+  geom_line(aes(year, Oceania), colour = 'orange') +
+  labs(y = "Life Expectancy")
+```
+
+Here I'll create a new dataframe with some additional information about some selected countries, and join them to the year 2007 in gapminder, as that is roughly the same time as the olympic medal statistic is from:
+
+```{r}
+more_data <- data_frame(country = c('Norway', 'Canada', 'Sudan', 'China', 'Thailand'), highest_peak = c(2469, 5956, 3042, 8848, 2565), Olympic_goldMedals = c(188, 137, 0, 237, 9))
+
+joined_data <- gapminder %>%
+  filter(year == 2007) %>%
+  right_join(more_data, by = 'country')
+knitr::kable(joined_data)
+```
+
+I can now check if there seems to be a correlation between the population in a country, and the number of olympic gold medals:
+
+```{r}
+ggplot(joined_data, aes(pop, Olympic_goldMedals)) +
+  geom_point() +
+  geom_line(colour = 'blue')
+```
+
+There definitely does not seem to be a trend here!
