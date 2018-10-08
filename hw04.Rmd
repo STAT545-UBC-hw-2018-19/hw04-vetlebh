@@ -68,6 +68,35 @@ joined_data <- gapminder %>%
 knitr::kable(joined_data)
 ```
 
+Lets see if we can get different results using different joins:
+
+```{r}
+left_join <- gapminder %>%
+  filter(year == 2007) %>%
+  left_join(more_data, by = 'country')
+knitr::kable(left_join)
+```
+
+So left_join will in this example keep all the rows in gapminder, and paste in the more_data dataset where it fits.
+
+
+```{r}
+full_join <- gapminder %>%
+  filter(year == 2007) %>%
+  full_join(more_data, by = 'country')
+knitr::kable(full_join)
+```
+
+Actually, full_join does exactly the same as left_join on this data set. This is because all the countries present in more_data dataset, are also present in the original gapminder. Therefore, we should also see that inner_join will replicate the result of the right_join we started with:
+
+```{r}
+inner_join <- gapminder %>%
+  filter(year == 2007) %>%
+  inner_join(more_data, by = 'country')
+knitr::kable(inner_join)
+```
+
+
 I can now check if there seems to be a correlation between the population in a country, and the number of olympic gold medals:
 
 ```{r}
@@ -77,3 +106,14 @@ ggplot(joined_data, aes(pop, Olympic_goldMedals)) +
 ```
 
 There definitely does not seem to be a trend here!
+
+And since I am Norwegian I should probably brag a little bit, and show some statistics and plots of Olympic medals per population:
+
+```{r}
+joined_data %>%
+  transmute(country, pop, Olympic_goldMedals, medalsPerPop = Olympic_goldMedals / pop) %>%
+  ggplot(aes(country, medalsPerPop)) +
+  geom_col(aes(fill = country))
+```
+
+Hehe, guess I might have to log-transform this data in the future, in order to at least be able to see the scores of the other countries ;)
